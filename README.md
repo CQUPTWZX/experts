@@ -64,6 +64,9 @@ optional arguments:
   --tau TAU             Temperature for contrastive model.
   --seed SEED           Random seed.
   --wandb               Use wandb for logging.
+  --experts             Number of experts
+  --ta                  If prefix weight ≤ tau , the loss of expert m on the sample will be eliminated.
+  --eta                 Eta is a temperature factor that adjusts the sensitivity of prefix weights.
 ```
 
 Checkpoints are in `./checkpoints/DATA-NAME`. Two checkpoints are kept based on macro-F1 and micro-F1 respectively 
@@ -91,6 +94,8 @@ optional arguments:
   --name NAME           Name of checkpoint. Commonly as DATA-NAME.
   --extra {_macro,_micro}
                         An extra string in the name of checkpoint. Default: _macro
+  --experts             Number of experts
+  --eta                 Eta is a temperature factor that adjusts the sensitivity of prefix weights.
 ```
 
 Use `--extra _macro` or `--extra _micro`  to choose from using `checkpoint_best_macro.pt` or`checkpoint_best_micro.pt` respectively.
