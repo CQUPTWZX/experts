@@ -36,10 +36,6 @@ python preprocess_rcv1.py
 python data_rcv1.py
 ```
 
-### CWOS and CRCV1-V2
-
-The test of CWOS and CRCV1-V2 datasets can pass the
-
 ## Train
 
 ```
