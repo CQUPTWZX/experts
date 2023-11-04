@@ -72,32 +72,12 @@ Checkpoints are in `./checkpoints/DATA-NAME`. Two checkpoints are kept based on 
 e.g. Train on `WebOfScience` with `batch=12, lambda=0.05, gamma=0.02`. Checkpoints will be in `checkpoints/WebOfScience-test/`.
 
 ```shell
-python train.py --name test --batch 12 --data WebOfScience --lambda 0.05 --thre 0.02
+python train.py --name test --batch 12 --data WebOfScience --lamb 0.05 --thre 0.02
 ```
 
 ### Reproducibility
 
-Contrastive learning is sensitive to hyper-parameters. We report results with fixed random seed but we observe higher results with unfixed seed.
-
-* The results reported in the main table can be observed with following settings under `seed=3`.
-
-```
-WOS: lambda 0.05 thre 0.02
-NYT: lambda 0.3 thre 0.002
-RCV1: lambda 0.3 thre 0.001
-```
-
-We experiment on GeForce RTX 3090 (24G) with CUDA version $11.2$.
-
-* The following settings can achieve higher results with unfixed seed (which we reported in the paper) .
-
-```
-WOS: lambda 0.1 thre 0.02
-NYT: lambda 0.3 thre 0.005
-RCV1: lambda 0.3 thre 0.005
-```
-
-* We also find that a higher `tau` (e.g. `tau=2`) is beneficial but we keep it to $1$ for simplicity.
+The related parameter configuration has been published in the paper.
 
 ## Test
 
