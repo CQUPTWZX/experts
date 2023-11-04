@@ -12,10 +12,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--device', type=str, default='cuda:1')
 parser.add_argument('--batch', type=int, default=128, help='Batch size.')
 parser.add_argument('--name', type=str, required=True, help='Name of checkpoint. Commonly as DATASET-NAME.')
+parser.add_argument('--experts', type=int, default=3, help='Number of experts')
+parser.add_argument('--eta', default=0.91, type=float,
+                    help='eta is a temperature factor that adjusts the sensitivity of prefix weights.')
 extra_choices = ['_macro1', '_micro1', '_macro2', '_micro2']
 # 创建参数并添加到一个列表
 extra_args = []
-experts = 3  # 专家数量
+args = parser.parse_args()
+experts = args.experts
 for i in range(experts):
     extra_arg = f'--extra{i+1}'
     extra_choices_arg = f'--extra{i+1}_choices'
@@ -25,6 +29,7 @@ for i in range(experts):
     extra_args.append(extra_choices_arg)
 args = parser.parse_args()
 
+
 if __name__ == '__main__':
     checkpoints = []
 
@@ -33,6 +38,7 @@ if __name__ == '__main__':
         checkpoint = torch.load(os.path.join('checkpoints', args.name, f'checkpoint_best{extra}.pt'),
                                 map_location='cpu')
         checkpoints.append(checkpoint)
+    eta = args.eta
     batch_size = args.batch
     device = args.device
     extra = args.extra1
@@ -57,7 +63,6 @@ if __name__ == '__main__':
         checkpoint = torch.load(os.path.join('checkpoints', args.name, f'checkpoint_best{extra}.pt'),
                                 map_location='cpu')
         model_checkpoints.append(checkpoint)
-
     for i in range(experts):
         checkpoint = model_checkpoints[i]
         model = ContrastModel.from_pretrained('bert-base-uncased', num_labels=num_class,
@@ -77,8 +82,7 @@ if __name__ == '__main__':
     index = []
     slot_truth = []
     slot_pred = []
-    reweight_temperature = 0.91
-    eta = reweight_temperature
+    reweight_temperature = eta
     pbar = tqdm(test)
     with torch.no_grad():
         for data, label, idx in pbar:

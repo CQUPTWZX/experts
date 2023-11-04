@@ -86,7 +86,10 @@ parser.add_argument('--tau', default=1, type=float, help='Temperature for contra
 parser.add_argument('--seed', default=3, type=int, help='Random seed.')
 parser.add_argument('--wandb', default=False, action='store_true', help='Use wandb for logging.')
 parser.add_argument('--experts', type=int, default=3, help='Number of experts')
-
+parser.add_argument('--ta', default=0.5, type=float,
+                    help='If prefix weight ≤ tau , the loss of expert m on the sample will be eliminated.')
+parser.add_argument('--eta', default=0.91, type=float,
+                    help='eta is a temperature factor that adjusts the sensitivity of prefix weights.')
 
 def get_root(path_dict, n):
     ret = []
@@ -147,9 +150,9 @@ if __name__ == '__main__':
     num_class = len(label_dict)
     dataset = BertDataset(device=device, pad_idx=tokenizer.pad_token_id, data_path=data_path)
 
-    ta = 0.5
-    reweight_temperature = 0.91
-    eta = reweight_temperature
+    ta = args.ta
+    eta = args.eta
+    reweight_temperature = eta
     annealing = 500
     experts = args.experts
     print(experts)
