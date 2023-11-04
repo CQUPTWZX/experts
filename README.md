@@ -101,22 +101,3 @@ e.g. Test on previous example.
 python test.py --name WebOfScience-test
 ```
 
-## Citation
-
-```
-@inproceedings{wang-etal-2022-incorporating,
-    title = "Incorporating Hierarchy into Text Encoder: a Contrastive Learning Approach for Hierarchical Text Classification",
-    author = "Wang, Zihan  and
-      Wang, Peiyi  and
-      Huang, Lianzhe  and
-      Sun, Xin  and
-      Wang, Houfeng",
-    booktitle = "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
-    month = may,
-    year = "2022",
-    address = "Dublin, Ireland",
-    publisher = "Association for Computational Linguistics",
-    url = "https://aclanthology.org/2022.acl-long.491",
-    pages = "7109--7119",
-}
-```
