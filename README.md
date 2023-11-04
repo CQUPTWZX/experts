@@ -1,8 +1,4 @@
-# Incorporating Hierarchy into Text Encoder: a Contrastive Learning Approach for Hierarchical Text Classification
-
-This repository implements a contrastive learning model for hierarchical text classification. This work has been 
-accepted as the long paper "Incorporating Hierarchy into Text Encoder: a Contrastive Learning Approach for Hierarchical 
-Text Classification" in ACL 2022.
+# Uncertainty-guided Multi-Expert Learning for Long-tailed Hierarchical Text Classification
 
 ## Requirements
 
@@ -29,14 +25,6 @@ python preprocess_wos.py
 python data_wos.py
 ```
 
-### NYT
-
-The original dataset can be acquired [here](https://catalog.ldc.upenn.edu/LDC2008T19).
-
-```shell
-cd ./data/nyt
-python data_nyt.py
-```
 
 ### RCV1-V2
 
