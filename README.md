@@ -99,9 +99,13 @@ optional arguments:
 
 Use `--extra _macro` or `--extra _micro`  to choose from using `checkpoint_best_macro.pt` or`checkpoint_best_micro.pt` respectively.
 
-e.g. Test on previous example.
-
 ```shell
 python test.py --name WebOfScience-test
+```
+The CWOS and CRCV1-V2 data sets can be tested by the following files.
+
+e.g. Test on previous example.
+```shell
+python parttest.py --name WebOfScience-test
 ```
 
