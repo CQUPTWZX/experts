@@ -107,16 +107,3 @@ if __name__ == '__main__':
     train, val = train_test_split(train, test_size=0.1, random_state=0)
     torch.save({'train': train, 'val': val, 'test': test}, 'split.pt')
 
-    # inv_label = {i:v for v, i in label_dict.items()}
-    # with open('data/rcv1/rcv1_train_all.json', 'w') as f:
-    #     for i in train:
-    #         line = json.dumps({'token': source[i], 'label': [inv_label[l] for l in labels[i]], 'doc_topic': [], 'doc_keyword': []})
-    #         f.write(line + '\n')
-    # with open('data/rcv1/rcv1_val_all.json', 'w') as f:
-    #     for i in val:
-    #         line = json.dumps({'token': source[i], 'label': [inv_label[l] for l in labels[i]], 'doc_topic': [], 'doc_keyword': []})
-    #         f.write(line + '\n')
-    # with open('data/rcv1/rcv1_test_all.json', 'w') as f:
-    #     for i in test:
-    #         line = json.dumps({'token': source[i], 'label': [inv_label[l] for l in labels[i]], 'doc_topic': [], 'doc_keyword': []})
-    #         f.write(line + '\n')

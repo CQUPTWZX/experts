@@ -13,9 +13,9 @@ parser.add_argument('--device', type=str, default='cuda:1')
 parser.add_argument('--batch', type=int, default=128, help='Batch size.')
 parser.add_argument('--name', type=str, required=True, help='Name of checkpoint. Commonly as DATASET-NAME.')
 extra_choices = ['_macro1', '_micro1', '_macro2', '_micro2']
-# 创建参数并添加到一个列表
+
 extra_args = []
-experts = 3  # 专家数量
+experts = 3
 for i in range(experts):
     extra_arg = f'--extra{i+1}'
     extra_choices_arg = f'--extra{i+1}_choices'
@@ -84,7 +84,6 @@ if __name__ == '__main__':
         for data, label, idx in pbar:
             outputs = []
             padding_mask = data != tokenizer.pad_token_id
-            # 循环遍历模型列表并计算输出
             for model in models:
                 output = model(data, padding_mask, labels=label, return_dict=True)
                 outputs.append(output)
@@ -108,9 +107,8 @@ if __name__ == '__main__':
                     bb = b0.view(-1, b0.shape[1], 1) @ b.view(-1, 1, b.shape[1])
                     C = bb.sum(dim=[1, 2]) - bb.diagonal(dim1=1, dim2=2).sum(dim=1)
                 b0 = b
-                w.append(w[-1] * u / (1 - C))  # 前置权重
+                w.append(w[-1] * u / (1 - C))
 
-            # dynamic reweighting
             exp_w = [torch.exp(wi / eta) for wi in w]
             exp_w = exp_w[:-1]
             exp_w_sum = sum(exp_w)
@@ -123,7 +121,7 @@ if __name__ == '__main__':
             xi = torch.mean(torch.stack(reweighted_outs), dim=0)
 
             for l in label:
-                t = []  # 存储真实标签为1
+                t = []
                 for i in range(l.size(0)):
                     if l[i].item() == 1:
                         t.append(i)

@@ -4,17 +4,17 @@ import torch
 import math
 
 
-class ScheduledOptim:  # 学习率调度
+class ScheduledOptim:
     '''A simple wrapper class for learning rate scheduling'''
 
     def __init__(self, optimizer, lr, n_warmup_steps=4000, init_lr=0.):
-        self._optimizer = optimizer  # 优化器对象，例如torch.optim.Adam
-        self.init_lr = init_lr  # 预热阶段初始学习率
-        self.n_warmup_steps = n_warmup_steps  # 预热步数，表示在这些步数内逐渐增加学习率
-        self.n_steps = 0  # 当前训练步数
-        self.lr = lr  # 初始学习率
-        self.lr_step = (lr - init_lr) / n_warmup_steps  # 每个预热步数的学习率增加步长
-        self.decay_factor = lr * n_warmup_steps ** 0.5  # 学习率的衰减因子
+        self._optimizer = optimizer
+        self.init_lr = init_lr
+        self.n_warmup_steps = n_warmup_steps
+        self.n_steps = 0
+        self.lr = lr
+        self.lr_step = (lr - init_lr) / n_warmup_steps
+        self.decay_factor = lr * n_warmup_steps ** 0.5
 
     def step(self, scaler=None):
         "Step with the inner optimizer"
@@ -81,7 +81,7 @@ class Adam(torch.optim.Optimizer):
         https://openreview.net/forum?id=ryQu7f-RZ
     """
 
-    def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8,  # params：要优化的参数,可以是一个迭代器或定义参数组的字典
+    def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8,
                  weight_decay=0, amsgrad=False):
         defaults = dict(lr=lr, betas=betas, eps=eps,
                         weight_decay=weight_decay, amsgrad=amsgrad)

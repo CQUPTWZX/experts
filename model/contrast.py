@@ -304,13 +304,13 @@ class BertModel(BertPreTrainedModel):
 
 
 class ContrastModel(BertPreTrainedModel):
-    def __init__(self, config, cls_loss=True, contrast_loss=True, graph=False, layer=1, data_path=None,  #cls_loss是否使用分类损失
+    def __init__(self, config, cls_loss=True, contrast_loss=True, graph=False, layer=1, data_path=None,
                  multi_label=False, lamb=1, threshold=0.01, tau=1):
         super(ContrastModel, self).__init__(config)
         self.num_labels = config.num_labels
         self.tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.classifier = nn.Linear(config.hidden_size, config.num_labels)  #线性层用于分类任务的预测
+        self.classifier = nn.Linear(config.hidden_size, config.num_labels)
         self.bert = BertModel(config)
         self.pooler = BertPoolingLayer(config, 'cls')
         self.contrastive_lossfct = NTXent(config)
@@ -331,7 +331,7 @@ class ContrastModel(BertPreTrainedModel):
             token_type_ids=None,
             position_ids=None,
             head_mask=None,
-            inputs_embeds=None, #输入文本的嵌入表示
+            inputs_embeds=None,
             labels=None,
             output_attentions=None,
             output_hidden_states=None,
@@ -341,7 +341,7 @@ class ContrastModel(BertPreTrainedModel):
 
         contrast_mask = None
 
-        outputs = self.bert(  #调用bert的前向计算
+        outputs = self.bert(
             input_ids,
             attention_mask=attention_mask,
             token_type_ids=token_type_ids,
@@ -354,34 +354,32 @@ class ContrastModel(BertPreTrainedModel):
             embedding_weight=contrast_mask,
 
         )
-        pooled_output = outputs[0]  # (batch_size, sequence_length, hidden_size)，hidden_size是BERT模型的隐藏单元的维度
-        pooled_output = self.dropout(self.pooler(pooled_output))  # 池化得到一个固定维度的表示，丢弃处理防止过拟合
+        pooled_output = outputs[0]
+        pooled_output = self.dropout(self.pooler(pooled_output))
 
         loss = 0
         contrastive_loss = None
         contrast_logits = None
 
-        logits = self.classifier(pooled_output)  # 线性层（全连接层）映射到分类标签的预测空间
+        logits = self.classifier(pooled_output)
 
         if labels is not None:
-            if not self.multi_label:  # 根据self.multi_label的取值来确定使用的损失函数
-                loss_fct = CrossEntropyLoss()  # 单标签分类任务
+            if not self.multi_label:
+                loss_fct = CrossEntropyLoss()
                 target = labels.view(-1)
             else:
-                loss_fct = nn.BCEWithLogitsLoss()  # 多标签分类任务
+                loss_fct = nn.BCEWithLogitsLoss()
                 target = labels.to(torch.float32)
 
-            if self.cls_loss:  # 回归还是分类
+            if self.cls_loss:
                 if self.num_labels == 1:
-                    #  We are doing regression回归
                     loss_fct = MSELoss()
                     loss += loss_fct(logits.view(-1), labels.view(-1))
                 else:
                     loss += loss_fct(logits.view(-1, self.num_labels), target)
 
             if self.training:
-                contrast_mask = self.graph_encoder(outputs['inputs_embeds'],  # 对比掩码
-                                                   # outputs['inputs_embeds']为BERT模型的输入嵌入
+                contrast_mask = self.graph_encoder(outputs['inputs_embeds'],
                                                    attention_mask, labels, lambda x: self.bert.embeddings(x)[0])
 
                 contrast_output = self.bert(
@@ -394,20 +392,17 @@ class ContrastModel(BertPreTrainedModel):
                     output_attentions=output_attentions,
                     output_hidden_states=output_hidden_states,
                     return_dict=return_dict,
-                    embedding_weight=contrast_mask,  # 前向传播
+                    embedding_weight=contrast_mask,
                 )
-                contrast_sequence_output = self.dropout(self.pooler(contrast_output[0]))  # 得到对比序列输出
-                contrast_logits = self.classifier(contrast_sequence_output)  # 对比logits
+                contrast_sequence_output = self.dropout(self.pooler(contrast_output[0]))
+                contrast_logits = self.classifier(contrast_sequence_output)
                 contrastive_loss = self.contrastive_lossfct(  # NT-Xent
-                    torch.cat([pooled_output, contrast_sequence_output], dim=0), )  # 原始池化输出和对比序列输出拼接，视为一组样本对，计算它们之间的对比损失
-
-                loss += loss_fct(contrast_logits.view(-1, self.num_labels), target)   # contrast_logits形状为 (batch_size * 2, num_labels)
-                # 通过 view 操作将其调整为二维的形式，其中 batch_size * 2 表示样本对的数量。 target 是真实的标签，为 (batch_size, num_labels) 的二维张量
-                # loss_fct指多标签分类的二元交叉熵损失函数（BCEWithLogitsLoss），对比损失加到总损失中联合优化。
+                    torch.cat([pooled_output, contrast_sequence_output], dim=0), )
+                loss += loss_fct(contrast_logits.view(-1, self.num_labels), target)
             if contrastive_loss is not None and self.contrast_loss:
                 loss += contrastive_loss * self.lamb
 
-        if not return_dict:  # 是否需要以非字典形式返回结果
+        if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
 
